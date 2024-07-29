@@ -78,9 +78,10 @@
                 return;
             }
 
-            const apiKey = 'YOUR_API_KEY'; // Remplace par ta clé API
-            const cx = 'YOUR_SEARCH_ENGINE_ID'; // Remplace par l'ID de ton moteur de recherche
-            const url = `https://www.googleapis.com/customsearch/v1?q=${encodeURIComponent(query)}&cx=${cx}&key=${apiKey}&searchType=image`;
+            const gallery = document.getElementById('gallery');
+            gallery.innerHTML = '';
+
+            const url = `https://www.google.com/search?tbm=isch&q=${encodeURIComponent(query)}`;
 
             try {
                 const response = await fetch(url);
@@ -90,15 +91,18 @@
                     return;
                 }
 
-                const result = await response.json();
-                console.log('Image search result:', result);
+                const text = await response.text();
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(text, 'text/html');
+                const imgElements = doc.querySelectorAll('img');
 
-                const gallery = document.getElementById('gallery');
-                gallery.innerHTML = '';
-                result.items.forEach(item => {
-                    const img = document.createElement('img');
-                    img.src = item.link;
-                    gallery.appendChild(img);
+                imgElements.forEach(img => {
+                    const src = img.src;
+                    if (src && src.startsWith('http')) {
+                        const imgElement = document.createElement('img');
+                        imgElement.src = src;
+                        gallery.appendChild(imgElement);
+                    }
                 });
             } catch (error) {
                 console.error('Erreur:', error);
