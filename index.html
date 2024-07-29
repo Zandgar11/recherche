@@ -43,6 +43,24 @@
         button:hover {
             background-color: #0056b3;
         }
+        .gallery {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        .gallery img {
+            margin: 10px;
+            width: 200px;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 5px;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s;
+        }
+        .gallery img:hover {
+            transform: scale(1.05);
+        }
     </style>
 </head>
 <body>
@@ -50,16 +68,41 @@
         <h1>Recherche d'images</h1>
         <input type="text" id="searchQuery" placeholder="Entrez votre recherche...">
         <button onclick="searchImages()">Rechercher</button>
+        <div id="gallery" class="gallery"></div>
     </div>
     <script>
-        function searchImages() {
+        async function searchImages() {
             const query = document.getElementById('searchQuery').value.trim();
             if (!query) {
                 alert('Veuillez entrer un texte pour la recherche.');
                 return;
             }
-            const url = `https://www.google.com/search?tbm=isch&q=${encodeURIComponent(query)}`;
-            window.open(url, '_blank');
+
+            const apiKey = 'YOUR_SERPAPI_KEY'; // Remplace par ta clé API SerpAPI
+            const url = `https://serpapi.com/search.json?q=${encodeURIComponent(query)}&tbm=isch&api_key=${apiKey}`;
+
+            try {
+                const response = await fetch(url);
+                if (!response.ok) {
+                    console.error('Erreur lors de la recherche d\'images:', response.statusText);
+                    alert('Erreur lors de la recherche d\'images.');
+                    return;
+                }
+
+                const result = await response.json();
+                console.log('Image search result:', result);
+
+                const gallery = document.getElementById('gallery');
+                gallery.innerHTML = '';
+                result.images_results.forEach(image => {
+                    const img = document.createElement('img');
+                    img.src = image.thumbnail;
+                    gallery.appendChild(img);
+                });
+            } catch (error) {
+                console.error('Erreur:', error);
+                alert('Une erreur est survenue lors de la recherche d\'images.');
+            }
         }
     </script>
 </body>
