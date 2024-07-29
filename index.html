@@ -78,8 +78,9 @@
                 return;
             }
 
-            const apiKey = 'YOUR_SERPAPI_KEY'; // Remplace par ta clé API SerpAPI
-            const url = `https://serpapi.com/search.json?q=${encodeURIComponent(query)}&tbm=isch&api_key=${apiKey}`;
+            const apiKey = 'YOUR_API_KEY'; // Remplace par ta clé API
+            const cx = 'YOUR_SEARCH_ENGINE_ID'; // Remplace par l'ID de ton moteur de recherche
+            const url = `https://www.googleapis.com/customsearch/v1?q=${encodeURIComponent(query)}&cx=${cx}&key=${apiKey}&searchType=image`;
 
             try {
                 const response = await fetch(url);
@@ -94,9 +95,9 @@
 
                 const gallery = document.getElementById('gallery');
                 gallery.innerHTML = '';
-                result.images_results.forEach(image => {
+                result.items.forEach(item => {
                     const img = document.createElement('img');
-                    img.src = image.thumbnail;
+                    img.src = item.link;
                     gallery.appendChild(img);
                 });
             } catch (error) {
