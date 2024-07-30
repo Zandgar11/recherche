@@ -95,27 +95,53 @@
                 return;
             }
 
-            const accessKey = 'uOi1U-MKgUkWr-76VbeuwWnXahSkmNX2p4JeWhlmkis'; // Ta clé API Unsplash
-            const page = Math.floor(Math.random() * 100) + 1; // Génère un numéro de page aléatoire entre 1 et 100
-            const url = `https://api.unsplash.com/search/photos?query=${encodeURIComponent(query)}&client_id=${accessKey}&per_page=20&page=${page}&orientation=landscape&content_filter=high`;
+            const unsplashAccessKey = 'uOi1U-MKgUkWr-76VbeuwWnXahSkmNX2p4JeWhlmkis';
+            const pexelsApiKey = 'Nsd8UkadfGFLGxJzEuKQdskSkMkkGeEb9cwzoHIQFEMfDYgZzjv0ISXA';
+            const pixabayApiKey = 'YOUR_PIXABAY_API_KEY';
+
+            const unsplashUrl = `https://api.unsplash.com/search/photos?query=${encodeURIComponent(query)}&client_id=${unsplashAccessKey}&per_page=5&page=${Math.floor(Math.random() * 100) + 1}&orientation=landscape&content_filter=high`;
+            const pexelsUrl = `https://api.pexels.com/v1/search?query=${encodeURIComponent(query)}&per_page=5&page=${Math.floor(Math.random() * 100) + 1}`;
+            const pixabayUrl = `https://pixabay.com/api/?key=${pixabayApiKey}&q=${encodeURIComponent(query)}&image_type=photo&per_page=5&page=${Math.floor(Math.random() * 100) + 1}`;
 
             try {
-                const response = await fetch(url);
-                if (!response.ok) {
-                    console.error('Erreur lors de la recherche d\'images:', response.statusText);
-                    alert('Erreur lors de la recherche d\'images.');
-                    return;
+                const [unsplashResponse, pexelsResponse, pixabayResponse] = await Promise.all([
+                    fetch(unsplashUrl),
+                    fetch(pexelsUrl, { headers: { Authorization: `Bearer ${pexelsApiKey}` } }),
+                    fetch(pixabayUrl)
+                ]);
+
+                if (!unsplashResponse.ok || !pexelsResponse.ok || !pixabayResponse.ok) {
+                    throw new Error('Erreur lors de la récupération des données.');
                 }
 
-                const result = await response.json();
-                console.log('Résultat de la recherche d\'images:', result);
+                const unsplashResult = await unsplashResponse.json();
+                const pexelsResult = await pexelsResponse.json();
+                const pixabayResult = await pixabayResponse.json();
 
                 const gallery = document.getElementById('gallery');
                 gallery.innerHTML = '';
-                result.results.forEach(item => {
+
+                // Ajouter les images d'Unsplash
+                unsplashResult.results.forEach(item => {
                     const img = document.createElement('img');
                     img.src = item.urls.small;
                     img.alt = item.alt_description || 'Image';
+                    gallery.appendChild(img);
+                });
+
+                // Ajouter les images de Pexels
+                pexelsResult.photos.forEach(item => {
+                    const img = document.createElement('img');
+                    img.src = item.src.small;
+                    img.alt = item.alt || 'Image';
+                    gallery.appendChild(img);
+                });
+
+                // Ajouter les images de Pixabay
+                pixabayResult.hits.forEach(item => {
+                    const img = document.createElement('img');
+                    img.src = item.webformatURL;
+                    img.alt = item.tags || 'Image';
                     gallery.appendChild(img);
                 });
             } catch (error) {
