@@ -110,8 +110,14 @@
                     fetch(pexelsUrl, { headers: { Authorization: `Bearer ${pexelsApiKey}` } })
                 ]);
 
-                if (!unsplashResponse.ok || !pexelsResponse.ok) {
-                    throw new Error('Erreur lors de la récupération des données.');
+                if (!unsplashResponse.ok) {
+                    const unsplashError = await unsplashResponse.text();
+                    throw new Error(`Erreur Unsplash: ${unsplashResponse.status} - ${unsplashError}`);
+                }
+
+                if (!pexelsResponse.ok) {
+                    const pexelsError = await pexelsResponse.text();
+                    throw new Error(`Erreur Pexels: ${pexelsResponse.status} - ${pexelsError}`);
                 }
 
                 const unsplashResult = await unsplashResponse.json();
@@ -137,7 +143,7 @@
                 });
             } catch (error) {
                 console.error('Erreur:', error);
-                alert('Une erreur est survenue lors de la recherche d\'images.');
+                alert('Une erreur est survenue lors de la recherche d\'images : ' + error.message);
             }
         }
     </script>
