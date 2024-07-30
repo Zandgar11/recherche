@@ -95,28 +95,27 @@
                 return;
             }
 
+            const isNsfw = query.toLowerCase().includes('nsfw');
+            const sanitizedQuery = query.replace(/nsfw/i, '').trim();
+
             const unsplashAccessKey = 'uOi1U-MKgUkWr-76VbeuwWnXahSkmNX2p4JeWhlmkis';
             const pexelsApiKey = 'Nsd8UkadfGFLGxJzEuKQdskSkMkkGeEb9cwzoHIQFEMfDYgZzjv0ISXA';
-            const pixabayApiKey = 'YOUR_PIXABAY_API_KEY';
 
-            const unsplashUrl = `https://api.unsplash.com/search/photos?query=${encodeURIComponent(query)}&client_id=${unsplashAccessKey}&per_page=5&page=${Math.floor(Math.random() * 100) + 1}&orientation=landscape&content_filter=high`;
-            const pexelsUrl = `https://api.pexels.com/v1/search?query=${encodeURIComponent(query)}&per_page=5&page=${Math.floor(Math.random() * 100) + 1}`;
-            const pixabayUrl = `https://pixabay.com/api/?key=${pixabayApiKey}&q=${encodeURIComponent(query)}&image_type=photo&per_page=5&page=${Math.floor(Math.random() * 100) + 1}`;
+            const unsplashUrl = `https://api.unsplash.com/search/photos?query=${encodeURIComponent(sanitizedQuery)}&client_id=${unsplashAccessKey}&per_page=5&page=${Math.floor(Math.random() * 100) + 1}&orientation=landscape&content_filter=${isNsfw ? 'high' : 'low'}`;
+            const pexelsUrl = `https://api.pexels.com/v1/search?query=${encodeURIComponent(sanitizedQuery)}&per_page=5&page=${Math.floor(Math.random() * 100) + 1}`;
 
             try {
-                const [unsplashResponse, pexelsResponse, pixabayResponse] = await Promise.all([
+                const [unsplashResponse, pexelsResponse] = await Promise.all([
                     fetch(unsplashUrl),
-                    fetch(pexelsUrl, { headers: { Authorization: `Bearer ${pexelsApiKey}` } }),
-                    fetch(pixabayUrl)
+                    fetch(pexelsUrl, { headers: { Authorization: `Bearer ${pexelsApiKey}` } })
                 ]);
 
-                if (!unsplashResponse.ok || !pexelsResponse.ok || !pixabayResponse.ok) {
+                if (!unsplashResponse.ok || !pexelsResponse.ok) {
                     throw new Error('Erreur lors de la récupération des données.');
                 }
 
                 const unsplashResult = await unsplashResponse.json();
                 const pexelsResult = await pexelsResponse.json();
-                const pixabayResult = await pixabayResponse.json();
 
                 const gallery = document.getElementById('gallery');
                 gallery.innerHTML = '';
@@ -134,14 +133,6 @@
                     const img = document.createElement('img');
                     img.src = item.src.small;
                     img.alt = item.alt || 'Image';
-                    gallery.appendChild(img);
-                });
-
-                // Ajouter les images de Pixabay
-                pixabayResult.hits.forEach(item => {
-                    const img = document.createElement('img');
-                    img.src = item.webformatURL;
-                    img.alt = item.tags || 'Image';
                     gallery.appendChild(img);
                 });
             } catch (error) {
