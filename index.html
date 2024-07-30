@@ -108,13 +108,14 @@
                 }
 
                 const result = await response.json();
-                console.log('Image search result:', result);
+                console.log('Résultat de la recherche d\'images:', result);
 
                 const gallery = document.getElementById('gallery');
                 gallery.innerHTML = '';
                 result.results.forEach(item => {
                     const img = document.createElement('img');
                     img.src = item.urls.small;
+                    img.alt = item.alt_description || 'Image';
                     gallery.appendChild(img);
                 });
             } catch (error) {
