@@ -101,8 +101,10 @@
             const unsplashAccessKey = 'uOi1U-MKgUkWr-76VbeuwWnXahSkmNX2p4JeWhlmkis';
             const pexelsApiKey = 'Nsd8UkadfGFLGxJzEuKQdskSkMkkGeEb9cwzoHIQFEMfDYgZzjv0ISXA';
 
-            const unsplashUrl = `https://api.unsplash.com/search/photos?query=${encodeURIComponent(sanitizedQuery)}&client_id=${unsplashAccessKey}&per_page=5&page=${Math.floor(Math.random() * 100) + 1}&orientation=landscape&content_filter=${isNsfw ? 'high' : 'low'}`;
-            const pexelsUrl = `https://api.pexels.com/v1/search?query=${encodeURIComponent(sanitizedQuery)}&per_page=5&page=${Math.floor(Math.random() * 100) + 1}`;
+            const corsProxy = 'https://cors-anywhere.herokuapp.com/'; // Utilisation d'un proxy CORS
+
+            const unsplashUrl = `${corsProxy}https://api.unsplash.com/search/photos?query=${encodeURIComponent(sanitizedQuery)}&client_id=${unsplashAccessKey}&per_page=5&page=${Math.floor(Math.random() * 100) + 1}&orientation=landscape&content_filter=${isNsfw ? 'high' : 'low'}`;
+            const pexelsUrl = `${corsProxy}https://api.pexels.com/v1/search?query=${encodeURIComponent(sanitizedQuery)}&per_page=5&page=${Math.floor(Math.random() * 100) + 1}`;
 
             try {
                 const [unsplashResponse, pexelsResponse] = await Promise.all([
