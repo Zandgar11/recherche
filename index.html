@@ -19,6 +19,8 @@
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
             border-radius: 8px;
             display: inline-block;
+            width: 90%;
+            max-width: 800px;
         }
         h1 {
             font-size: 24px;
@@ -51,8 +53,9 @@
         }
         .gallery img {
             margin: 10px;
-            width: 200px;
-            height: 200px;
+            width: 100%;
+            max-width: 200px;
+            height: auto;
             object-fit: cover;
             border-radius: 5px;
             box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
@@ -60,6 +63,20 @@
         }
         .gallery img:hover {
             transform: scale(1.05);
+        }
+        @media (max-width: 600px) {
+            .gallery img {
+                max-width: 100%;
+                margin: 5px;
+            }
+            input[type="text"] {
+                width: 100%;
+            }
+            button {
+                width: 100%;
+                padding: 10px;
+                margin-top: 10px;
+            }
         }
     </style>
 </head>
@@ -78,8 +95,8 @@
                 return;
             }
 
-            const accessKey = 'uOi1U-MKgUkWr-76VbeuwWnXahSkmNX2p4JeWhlmkis'; // Remplace par ta clé API Unsplash
-            const url = `https://api.unsplash.com/search/photos?query=${encodeURIComponent(query)}&client_id=${accessKey}`;
+            const accessKey = 'TA_CLE_ACCESS_UNSPLASH'; // Remplace par ta clé API Unsplash
+            const url = `https://api.unsplash.com/search/photos?query=${encodeURIComponent(query)}&client_id=${accessKey}&per_page=20&orientation=landscape&content_filter=high`;
 
             try {
                 const response = await fetch(url);
